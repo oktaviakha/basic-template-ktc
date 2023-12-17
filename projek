@@ -1,1 +1,118 @@
+#!/bin/bash
+
+declare -A dataMahasiswa
+npmCounter=0
+
+tampilkanMenu() {
+    echo -e "============================\n"
+    echo "Program Manajemen Mahasiswa"
+    echo -e "============================\n"
+    echo "Menu: "
+    echo "1. Tambah Mahasiswa"
+    echo "2. Tampilkan Data Mahasiswa"
+    echo "3. Edit Data Mahasiswa"
+    echo "4. Hapus Data Mahasiswa"
+    echo "5. Cari Mahasiswa"
+    echo "6. Keluar"
+    echo -e "Pilih menu: "
+}
+
+tambahMahasiswa() {
+    npmCounter=$((npmCounter + 1))
+    npm=$npmCounter
+    declare -a dataBaru=()
+
+    clear
+    read -p "Masukkan NPM: " npm
+    read -p "Masukkan Nama: " nama
+    read -p "Masukkan Usia: " usia
+    read -p "Masukkan Alamat: " alamat
+
+    dataBaru=("NPM: $npm" "Nama: $nama" "Usia: $usia" "Alamat: $alamat")
+    dataMahasiswa["$npm"]="${dataBaru[@]}"
+    
+    echo -e "Data mahasiswa telah ditambahkan!\n"
+}
+
+
+tampilkanDataMahasiswa() {
+    if [ ${#dataMahasiswa[@]} -eq 0 ]; then
+        echo -e "Belum Ada Data Mahasiswa Yang Tersedia.\n"
+    else
+        echo -e "Daftar Data Mahasiswa:\n"
+        for npm in "${!dataMahasiswa[@]}"; do
+            mahasiswa=${dataMahasiswa["$npm"]}
+            echo -e "$mahasiswa-------------------\n"
+        done
+    fi
+}
+
+editDataMahasiswa() {
+    read -p "Masukkan NPM Mahasiswa yang Ingin Diedit: " npm
+    mahasiswa=${dataMahasiswa["$npm"]}
+    
+    if [ -n "$mahasiswa" ]; then
+        echo -e "Data Mahasiswa yang ingin diedit:\n$mahasiswa"
+
+        read -p "Masukkan Nama Baru: " namaBaru
+        read -p "Masukkan Usia Baru: " usiaBaru
+        read -p "Masukkan Alamat Baru: " alamatBaru
+
+        # Update data mahasiswa
+        dataMahasiswa["$npm"]="NPM: $npm\nNama: $namaBaru\nUsia: $usiaBaru\nAlamat: $alamatBaru\n"
+        
+        echo -e "Data Mahasiswa Berhasil Diubah!\n"
+    else
+        echo -e "NPM Mahasiswa Tidak Valid.\n"
+    fi
+}
+
+hapusDataMahasiswa() {
+    read -p "Masukkan NPM Mahasiswa yang Ingin Dihapus: " npm
+    mahasiswa=${dataMahasiswa["$npm"]}
+    
+    if [ -n "$mahasiswa" ]; then
+        unset dataMahasiswa["$npm"]
+        echo -e "Data Mahasiswa Berhasil Dihapus!\n"
+    else
+        echo -e "NPM Mahasiswa Tidak Valid.\n"
+    fi
+}
+
+cariDataMahasiswa() {
+    while true; do
+        read -p "Masukkan NPM Mahasiswa untuk Pencarian (atau 'kembali' untuk kembali ke menu): " npmCari
+
+        if [ "$npmCari" = "kembali" ]; then
+            echo "Kembali ke Menu Utama."
+            break
+        fi
+
+        mahasiswa=${dataMahasiswa["$npmCari"]}
+
+        if [ -n "$mahasiswa" ]; then
+            echo -e "Hasil Pencarian untuk NPM '$npmCari':\n$mahasiswa"
+            echo "-------------------"
+            break
+        else
+            echo -e "NPM Mahasiswa Tidak Valid. Coba lagi atau ketik 'kembali' untuk kembali ke menu.\n"
+        fi
+    done
+}
+
+# Program utama
+while true; do
+    tampilkanMenu
+    read -p "Masukkan pilihan (1-6): " pilihan
+
+    case $pilihan in
+        1) tambahMahasiswa ;;
+        2) tampilkanDataMahasiswa ;;
+        3) editDataMahasiswa ;;
+        4) hapusDataMahasiswa ;;
+        5) cariDataMahasiswa ;;
+        6) echo "Keluar dari program." ; exit 0 ;;
+        *) echo "Pilihan tidak valid. Silakan coba lagi." ;;
+    esac
+done
 
